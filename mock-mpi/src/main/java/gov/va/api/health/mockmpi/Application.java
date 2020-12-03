@@ -1,4 +1,4 @@
-package gov.va.api.health.mockmvi;
+package gov.va.api.health.mockmpi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -7,7 +7,7 @@
     <version>7.0.18</version>
     <relativePath/>
   </parent>
-  <artifactId>mock-mvi</artifactId>
+  <artifactId>mock-mpi</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
