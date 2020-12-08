@@ -11,5 +11,5 @@
   </parent>
   <artifactId>mock-mpi-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
 </project>
