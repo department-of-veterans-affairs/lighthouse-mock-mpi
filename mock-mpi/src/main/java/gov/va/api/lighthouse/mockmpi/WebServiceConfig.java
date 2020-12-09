@@ -21,8 +21,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
-import org.springframework.ws.soap.SoapVersion;
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
@@ -46,7 +44,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
   /** Default WSDL. */
   @Bean(name = "idmWebService")
-  public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema idmWebServiceSchema, XsdSchemaCollection idmWebServiceSchemaCollection) {
+  public DefaultWsdl11Definition defaultWsdl11Definition(
+      XsdSchema idmWebServiceSchema, XsdSchemaCollection idmWebServiceSchemaCollection) {
     DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
     wsdl11Definition.setPortTypeName("VAIdMPort");
     wsdl11Definition.setLocationUri(URL);
@@ -90,8 +89,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
   @Bean
   public XsdSchemaCollection idmWebServiceSchemaCollection() {
     CommonsXsdSchemaCollection collection =
-        new CommonsXsdSchemaCollection(
-            new ClassPathResource("META-INF/wsdl/IdMHL7v3.xsd"));
+        new CommonsXsdSchemaCollection(new ClassPathResource("META-INF/wsdl/IdMHL7v3.xsd"));
     collection.setInline(true);
     return collection;
   }
@@ -103,7 +101,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     MessageDispatcherServlet servlet = new MessageDispatcherServlet();
     servlet.setApplicationContext(applicationContext);
     servlet.setTransformWsdlLocations(true);
-    return new ServletRegistrationBean<>(servlet, URL +"/*");
+    return new ServletRegistrationBean<>(servlet, URL + "/*");
   }
 
   /** Security interceptor. */
