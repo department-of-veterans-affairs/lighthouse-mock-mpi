@@ -13,12 +13,13 @@
   <properties>
     <apache.ws.security>1.6.19</apache.ws.security>
     <h2.version>1.4.199</h2.version>
+    <master-patient-index-artifacts.version>1.0.0-SNAPSHOT</master-patient-index-artifacts.version>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.apache.ws.xmlschema</groupId>
-      <artifactId>xmlschema-core</artifactId>
-      <version>2.2.4</version>
+      <groupId>gov.va.api.lighthouse</groupId>
+      <artifactId>master-patient-index-artifacts</artifactId>
+      <version>${master-patient-index-artifacts.version}</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
