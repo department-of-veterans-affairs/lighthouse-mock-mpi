@@ -14,7 +14,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamSource;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.hl7.v3.PRPAIN201305UV02MCCIMT000100UV01Message;
+import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -64,23 +64,44 @@ public class PrpaIn201305Uv02Endpoint {
   @ResponsePayload
   @SneakyThrows
   public JAXBElement<PRPAIN201306UV02> prpa_In201305Uv02Response(
-      @RequestPayload JAXBElement<PRPAIN201305UV02MCCIMT000100UV01Message> request) {
-    final String ssn =
-        request
-            .getValue()
-            .getControlActProcess()
-            .getQueryByParameter()
-            .getValue()
-            .getParameterList()
-            .getLivingSubjectId()
-            .get(0)
-            .getValue()
-            .get(0)
-            .getExtension();
-    PrpaIn201306Uv02Entity responseEntity = entityManager.find(PrpaIn201306Uv02Entity.class, ssn);
-    String profile = responseEntity.profile();
-    return JAXBContext.newInstance(PRPAIN201306UV02.class)
-        .createUnmarshaller()
-        .unmarshal(new StreamSource(new StringReader(profile)), PRPAIN201306UV02.class);
+      @RequestPayload JAXBElement<PRPAIN201305UV02> request) {
+    try {
+      final String ssn =
+          request
+              .getValue()
+              .getControlActProcess()
+              .getQueryByParameter()
+              .getValue()
+              .getParameterList()
+              .getLivingSubjectId()
+              .get(0)
+              .getValue()
+              .get(0)
+              .getExtension();
+      PrpaIn201306Uv02Entity responseEntity = entityManager.find(PrpaIn201306Uv02Entity.class, ssn);
+      if (responseEntity == null) {
+        return JAXBContext.newInstance(PRPAIN201306UV02.class)
+            .createUnmarshaller()
+            .unmarshal(
+                new StreamSource(
+                    new StringReader(
+                        entityManager.find(PrpaIn201306Uv02Entity.class, "not_found").profile())),
+                PRPAIN201306UV02.class);
+      }
+      String profile = responseEntity.profile();
+      return JAXBContext.newInstance(PRPAIN201306UV02.class)
+          .createUnmarshaller()
+          .unmarshal(new StreamSource(new StringReader(profile)), PRPAIN201306UV02.class);
+    } catch (NullPointerException | IndexOutOfBoundsException e) {
+      return JAXBContext.newInstance(PRPAIN201306UV02.class)
+          .createUnmarshaller()
+          .unmarshal(
+              new StreamSource(
+                  new StringReader(
+                      entityManager
+                          .find(PrpaIn201306Uv02Entity.class, "invalid_request")
+                          .profile())),
+              PRPAIN201306UV02.class);
+    }
   }
 }
