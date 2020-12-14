@@ -65,34 +65,87 @@ public class PrpaIn201305Uv02Endpoint {
   @SneakyThrows
   public JAXBElement<PRPAIN201306UV02> prpa_In201305Uv02Response(
       @RequestPayload JAXBElement<PRPAIN201305UV02> request) {
-    try {
-      final String ssn =
-          request
-              .getValue()
-              .getControlActProcess()
-              .getQueryByParameter()
-              .getValue()
-              .getParameterList()
-              .getLivingSubjectId()
-              .get(0)
-              .getValue()
-              .get(0)
-              .getExtension();
-      PrpaIn201306Uv02Entity responseEntity = entityManager.find(PrpaIn201306Uv02Entity.class, ssn);
-      if (responseEntity == null) {
-        return JAXBContext.newInstance(PRPAIN201306UV02.class)
-            .createUnmarshaller()
-            .unmarshal(
-                new StreamSource(
-                    new StringReader(
-                        entityManager.find(PrpaIn201306Uv02Entity.class, "not_found").profile())),
-                PRPAIN201306UV02.class);
-      }
-      String profile = responseEntity.profile();
-      return JAXBContext.newInstance(PRPAIN201306UV02.class)
-          .createUnmarshaller()
-          .unmarshal(new StreamSource(new StringReader(profile)), PRPAIN201306UV02.class);
-    } catch (NullPointerException | IndexOutOfBoundsException e) {
+
+    if (request == null
+        || request.getValue() == null
+        || request.getValue().getControlActProcess() == null
+        || request.getValue().getControlActProcess().getQueryByParameter() == null
+        || request.getValue().getControlActProcess().getQueryByParameter().getValue() == null
+        || request
+                .getValue()
+                .getControlActProcess()
+                .getQueryByParameter()
+                .getValue()
+                .getParameterList()
+            == null
+        || request
+            .getValue()
+            .getControlActProcess()
+            .getQueryByParameter()
+            .getValue()
+            .getParameterList()
+            .getLivingSubjectId()
+            .isEmpty()
+        || request
+                .getValue()
+                .getControlActProcess()
+                .getQueryByParameter()
+                .getValue()
+                .getParameterList()
+                .getLivingSubjectId()
+            == null
+        || request
+                .getValue()
+                .getControlActProcess()
+                .getQueryByParameter()
+                .getValue()
+                .getParameterList()
+                .getLivingSubjectId()
+                .get(0)
+            == null
+        || request
+                .getValue()
+                .getControlActProcess()
+                .getQueryByParameter()
+                .getValue()
+                .getParameterList()
+                .getLivingSubjectId()
+                .get(0)
+                .getValue()
+            == null
+        || request
+            .getValue()
+            .getControlActProcess()
+            .getQueryByParameter()
+            .getValue()
+            .getParameterList()
+            .getLivingSubjectId()
+            .get(0)
+            .getValue()
+            .isEmpty()
+        || request
+                .getValue()
+                .getControlActProcess()
+                .getQueryByParameter()
+                .getValue()
+                .getParameterList()
+                .getLivingSubjectId()
+                .get(0)
+                .getValue()
+                .get(0)
+            == null
+        || request
+                .getValue()
+                .getControlActProcess()
+                .getQueryByParameter()
+                .getValue()
+                .getParameterList()
+                .getLivingSubjectId()
+                .get(0)
+                .getValue()
+                .get(0)
+                .getExtension()
+            == null) {
       return JAXBContext.newInstance(PRPAIN201306UV02.class)
           .createUnmarshaller()
           .unmarshal(
@@ -103,5 +156,31 @@ public class PrpaIn201305Uv02Endpoint {
                           .profile())),
               PRPAIN201306UV02.class);
     }
+    final String ssn =
+        request
+            .getValue()
+            .getControlActProcess()
+            .getQueryByParameter()
+            .getValue()
+            .getParameterList()
+            .getLivingSubjectId()
+            .get(0)
+            .getValue()
+            .get(0)
+            .getExtension();
+    PrpaIn201306Uv02Entity responseEntity = entityManager.find(PrpaIn201306Uv02Entity.class, ssn);
+    if (responseEntity == null) {
+      return JAXBContext.newInstance(PRPAIN201306UV02.class)
+          .createUnmarshaller()
+          .unmarshal(
+              new StreamSource(
+                  new StringReader(
+                      entityManager.find(PrpaIn201306Uv02Entity.class, "not_found").profile())),
+              PRPAIN201306UV02.class);
+    }
+    String profile = responseEntity.profile();
+    return JAXBContext.newInstance(PRPAIN201306UV02.class)
+        .createUnmarshaller()
+        .unmarshal(new StreamSource(new StringReader(profile)), PRPAIN201306UV02.class);
   }
 }
