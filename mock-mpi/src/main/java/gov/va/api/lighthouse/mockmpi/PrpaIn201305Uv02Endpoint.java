@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBContext;
@@ -65,87 +66,22 @@ public class PrpaIn201305Uv02Endpoint {
   @SneakyThrows
   public JAXBElement<PRPAIN201306UV02> prpa_In201305Uv02Response(
       @RequestPayload JAXBElement<PRPAIN201305UV02> request) {
-
-    if (request == null
-        || request.getValue() == null
-        || request.getValue().getControlActProcess() == null
-        || request.getValue().getControlActProcess().getQueryByParameter() == null
-        || request.getValue().getControlActProcess().getQueryByParameter().getValue() == null
-        || request
-                .getValue()
-                .getControlActProcess()
-                .getQueryByParameter()
-                .getValue()
-                .getParameterList()
-            == null
-        || request
-            .getValue()
-            .getControlActProcess()
-            .getQueryByParameter()
-            .getValue()
-            .getParameterList()
-            .getLivingSubjectId()
-            .isEmpty()
-        || request
-                .getValue()
-                .getControlActProcess()
-                .getQueryByParameter()
-                .getValue()
-                .getParameterList()
-                .getLivingSubjectId()
-            == null
-        || request
-                .getValue()
-                .getControlActProcess()
-                .getQueryByParameter()
-                .getValue()
-                .getParameterList()
-                .getLivingSubjectId()
-                .get(0)
-            == null
-        || request
-                .getValue()
-                .getControlActProcess()
-                .getQueryByParameter()
-                .getValue()
-                .getParameterList()
-                .getLivingSubjectId()
-                .get(0)
-                .getValue()
-            == null
-        || request
-            .getValue()
-            .getControlActProcess()
-            .getQueryByParameter()
-            .getValue()
-            .getParameterList()
-            .getLivingSubjectId()
-            .get(0)
-            .getValue()
-            .isEmpty()
-        || request
-                .getValue()
-                .getControlActProcess()
-                .getQueryByParameter()
-                .getValue()
-                .getParameterList()
-                .getLivingSubjectId()
-                .get(0)
-                .getValue()
-                .get(0)
-            == null
-        || request
-                .getValue()
-                .getControlActProcess()
-                .getQueryByParameter()
-                .getValue()
-                .getParameterList()
-                .getLivingSubjectId()
-                .get(0)
-                .getValue()
-                .get(0)
-                .getExtension()
-            == null) {
+    String ssn =
+        Optional.ofNullable(request)
+            .map(req -> req.getValue())
+            .map(value -> value.getControlActProcess())
+            .map(controlActProcess -> controlActProcess.getQueryByParameter())
+            .map(queryByParameter -> queryByParameter.getValue())
+            .map(value -> value.getParameterList())
+            .map(parameterList -> parameterList.getLivingSubjectId())
+            .filter(livingSubjectIdList -> !livingSubjectIdList.isEmpty())
+            .map(livingSubjectIdList -> livingSubjectIdList.get(0))
+            .map(livingSubjectId -> livingSubjectId.getValue())
+            .filter(valueList -> !valueList.isEmpty())
+            .map(valueList -> valueList.get(0))
+            .map(ii -> ii.getExtension())
+            .orElse(null);
+    if (ssn == null) {
       return JAXBContext.newInstance(PRPAIN201306UV02.class)
           .createUnmarshaller()
           .unmarshal(
@@ -156,18 +92,6 @@ public class PrpaIn201305Uv02Endpoint {
                           .profile())),
               PRPAIN201306UV02.class);
     }
-    final String ssn =
-        request
-            .getValue()
-            .getControlActProcess()
-            .getQueryByParameter()
-            .getValue()
-            .getParameterList()
-            .getLivingSubjectId()
-            .get(0)
-            .getValue()
-            .get(0)
-            .getExtension();
     PrpaIn201306Uv02Entity responseEntity = entityManager.find(PrpaIn201306Uv02Entity.class, ssn);
     if (responseEntity == null) {
       return JAXBContext.newInstance(PRPAIN201306UV02.class)
