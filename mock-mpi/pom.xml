@@ -9,12 +9,12 @@
   </parent>
   <groupId>gov.va.api.lighthouse</groupId>
   <artifactId>mock-mpi</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
   <properties>
     <apache.ws.security>1.6.19</apache.ws.security>
     <h2.version>1.4.199</h2.version>
-    <master-patient-index-model.version>1.0.0</master-patient-index-model.version>
+    <master-patient-index-model.version>1.0.1</master-patient-index-model.version>
   </properties>
   <dependencies>
     <dependency>
