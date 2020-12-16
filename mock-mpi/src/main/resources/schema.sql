@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS prpa_in201306uv02;
+CREATE TABLE prpa_in201306uv02(
+	ssnOrIcn VARCHAR(255) NOT NULL,
+
+	profile VARCHAR(max) NULL
+);
