@@ -12,6 +12,7 @@
   <version>1.0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
+    <docker.imageName>lighthouse-mock-mpi</docker.imageName>
     <apache.ws.security>1.6.19</apache.ws.security>
     <h2.version>1.4.199</h2.version>
     <master-patient-index-model.version>1.0.1</master-patient-index-model.version>
