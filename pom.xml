@@ -9,7 +9,7 @@
   <groupId>gov.va.api.lighthouse</groupId>
   <artifactId>mock-mpi-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
   <modules>
     <module>mock-mpi</module>
     <module>mock-mpi-tests</module>
