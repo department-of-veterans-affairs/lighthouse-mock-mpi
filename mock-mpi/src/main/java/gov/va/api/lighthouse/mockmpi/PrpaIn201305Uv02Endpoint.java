@@ -80,8 +80,9 @@ public class PrpaIn201305Uv02Endpoint {
             .filter(valueList -> !valueList.isEmpty())
             .map(valueList -> valueList.get(0))
             .map(ii -> ii.getExtension())
-            .orElse(null);
-    if (ssn == null) {
+            .orElse("")
+            .replaceAll("-", "");
+    if (ssn.isBlank()) {
       return JAXBContext.newInstance(PRPAIN201306UV02.class)
           .createUnmarshaller()
           .unmarshal(
