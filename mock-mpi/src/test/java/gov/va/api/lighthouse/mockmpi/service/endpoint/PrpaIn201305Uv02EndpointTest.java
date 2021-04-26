@@ -21,7 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class})
+@SpringBootTest(
+    classes = {Application.class},
+    properties = {"patient.vista-site.details=src/test/resources/vista-sites.json"})
 public class PrpaIn201305Uv02EndpointTest {
   @Autowired PrpaIn201305Uv02Endpoint prpaIn201305Uv02Endpoint;
 

@@ -1,7 +1,9 @@
 {
-  "default" : {
-    "sites" : [
-      "123"
-    ]
+  "vistaSiteDetails" : {
+    "default" : {
+      "sites" : [
+        "123"
+      ]
+    }
   }
 }
