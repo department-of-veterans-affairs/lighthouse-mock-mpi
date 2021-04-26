@@ -1,9 +1,9 @@
-package gov.va.api.lighthouse.mockmpi;
+package gov.va.api.lighthouse.mockmpi.service.endpoint;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.lighthouse.mockmpi.service.endpoint.PrpaIn201305Uv02Endpoint;
+import gov.va.api.lighthouse.mockmpi.Application;
 import gov.va.oit.oed.vaww.ObjectFactory;
 import javax.xml.bind.JAXBElement;
 import org.hl7.v3.CS;
@@ -66,23 +66,21 @@ public class PrpaIn201305Uv02EndpointTest {
   @Test
   public void invalidRequestTest() {
     assertThat(
-        assertThat(
-                getResponse(invalidRequest())
-                    .getControlActProcess()
-                    .getQueryAck()
-                    .getQueryResponseCode())
-            .isEqualTo(responseCode("AE")));
+            getResponse(invalidRequest())
+                .getControlActProcess()
+                .getQueryAck()
+                .getQueryResponseCode())
+        .isEqualTo(responseCode("AE"));
   }
 
   @Test
   public void notFoundTest() {
     assertThat(
-        assertThat(
-                getResponse(validRequest("123456789"))
-                    .getControlActProcess()
-                    .getQueryAck()
-                    .getQueryResponseCode())
-            .isEqualTo(responseCode("NF")));
+            getResponse(validRequest("123456789"))
+                .getControlActProcess()
+                .getQueryAck()
+                .getQueryResponseCode())
+        .isEqualTo(responseCode("NF"));
   }
 
   private CS responseCode(String code) {

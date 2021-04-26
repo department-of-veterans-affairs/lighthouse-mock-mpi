@@ -2,9 +2,8 @@ package gov.va.api.lighthouse.mockmpi.service.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 import lombok.Builder;
@@ -22,18 +21,22 @@ import org.springframework.context.annotation.Configuration;
 public class VistaSiteConfig {
   @Delegate private Map<String, SiteDetails> vistaSiteDetails;
 
+  public SiteDetails getOrDefault(String icn) {
+    return vistaSiteDetails().getOrDefault(icn, vistaSiteDetails().get("default"));
+  }
+
   @Bean
   @SneakyThrows
   VistaSiteConfig load(@Value("${vista-site.configuration}") String vistaSiteProperties) {
-    if ("unset".equals(vistaSiteProperties)) {
-      throw new IllegalArgumentException("Required property [vista-site.configuration] is unset.");
-    }
     Map<String, SiteDetails> details;
     try (FileInputStream is = new FileInputStream(vistaSiteProperties)) {
-      log.info("Conf: {}", vistaSiteProperties);
+      log.info("VistaSiteConfig: {}", vistaSiteProperties);
       details =
           JacksonConfig.createMapper()
               .readValue(is, new TypeReference<Map<String, SiteDetails>>() {});
+    } catch (FileNotFoundException e) {
+      // If the given file cannot be found, load an empty config
+      details = Map.of("default", SiteDetails.builder().build());
     }
     if (!details.containsKey("default")) {
       throw new IllegalArgumentException("vista-sites.json must contain a default site value.");

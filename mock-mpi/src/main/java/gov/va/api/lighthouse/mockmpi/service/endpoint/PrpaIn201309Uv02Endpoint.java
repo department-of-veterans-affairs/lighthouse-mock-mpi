@@ -13,7 +13,6 @@ import java.util.UUID;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hl7.v3.ActClassControlAct;
 import org.hl7.v3.CD;
 import org.hl7.v3.COCTMT090003UV01AssignedEntity;
@@ -49,7 +48,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-@Slf4j
 @Endpoint
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class PrpaIn201309Uv02Endpoint {
@@ -90,8 +88,6 @@ public class PrpaIn201309Uv02Endpoint {
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "PRPA_IN201309UV02")
   public JAXBElement<PRPAIN201310UV02> prpain201309UV02Request(
       @RequestPayload JAXBElement<PRPAIN201309UV02> requestBody) {
-    log.info("Request: {}", requestBody.getValue());
-    log.info("VistaSites: {}", vistaSiteConfig);
     // We only expect one icn at a time
     String icn =
         Optional.ofNullable(requestBody)
@@ -114,14 +110,15 @@ public class PrpaIn201309Uv02Endpoint {
     // Map sites to a PatientIdentifierSegment
     // <id extension="1011537977V693883^NI^200M^USVHA^P" root="2.16.840.1.113883.4.349"/>
     // <id extension="16264^PI^358^USVHA^A" root="2.16.840.1.113883.4.349"/>
+    // ToDo realistic identifier value?
     var identifiers =
-        vistaSiteConfig.get(icn).sites().stream()
+        vistaSiteConfig.getOrDefault(icn).sites().stream()
             .map(
-                id ->
+                site ->
                     PatientIdentifierSegment.builder()
                         .identifier("00000")
                         .identifierType("PI")
-                        .assigningLocation(id)
+                        .assigningLocation(site)
                         .assigningAuthority("USVHA")
                         .identifierStatus("A")
                         .build())
@@ -135,7 +132,6 @@ public class PrpaIn201309Uv02Endpoint {
             .assigningAuthority("USVHA")
             .identifierStatus("A")
             .build());
-    log.info("IDS: {}", identifiers);
     return new JAXBElement<>(
         new QName("PRPA_IN201310UV02"), PRPAIN201310UV02.class, response(patient(identifiers)));
   }
