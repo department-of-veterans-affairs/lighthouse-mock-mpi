@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.mockmpi;
+package gov.va.api.lighthouse.mockmpi.service.endpoint;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.stream.Collectors.joining;

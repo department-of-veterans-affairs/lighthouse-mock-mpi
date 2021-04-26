@@ -3,6 +3,7 @@ package gov.va.api.lighthouse.mockmpi;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.lighthouse.mockmpi.service.endpoint.PrpaIn201305Uv02Endpoint;
 import gov.va.oit.oed.vaww.ObjectFactory;
 import javax.xml.bind.JAXBElement;
 import org.hl7.v3.CS;
