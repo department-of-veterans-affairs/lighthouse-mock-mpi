@@ -8,7 +8,7 @@
     <relativePath/>
   </parent>
   <groupId>gov.va.api.lighthouse</groupId>
-  <version>1.0.7</version>
+  <version>1.0.8-SNAPSHOT</version>
   <artifactId>mock-mpi-tests</artifactId>
   <properties>
     <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
