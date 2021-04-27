@@ -5,6 +5,7 @@ that emulates the Master Patient Index (MPI) service.
 This can be used to provide synthetic MPI data outside the VA Intranet.
 Mock data is stored in XML files within the repository that are loaded into an embedded H2 database upon startup.
 
+## WSDL
 To view IdMHL7v3 WSDl: 
 ```
 curl --location --request GET 'http://localhost:9090/psim_webservice/IdMWebService/idmWebService.wsdl'
@@ -15,6 +16,7 @@ To view IdMHL7v3 XSD:
 curl --location --request GET 'http://localhost:9090/psim_webservice/IdMWebService/IdMHL7v3.xsd'
 ```
 
+## 1305 Request
 To invoke mock PRPA_IN201305UV02 SOAP service, post to the `/psim_webservice/IdMWebService` path. Example request:
 ```
 curl --location --request POST 'http://localhost:9090/psim_webservice/IdMWebService/' \
@@ -86,4 +88,16 @@ curl --location --request POST 'http://localhost:9090/psim_webservice/IdMWebServ
     </idm:PRPA_IN201305UV02>
   </env:Body>
 </env:Envelope>'
+```
+
+## 1309 Request
+To invoke mock PRPA_IN201309UV02 SOAP service, use any of the 1309 prefixed xml files within the `/mock-mpi/request`
+directory.
+
+An example curl command could look like the following:
+```
+$ curl \
+-H"Content-Type: text/xml" \
+http://localhost:9090/psim_webservice/IdMWebService \
+-d@mock-mpi/requests/1309-with-vista-site.xml
 ```

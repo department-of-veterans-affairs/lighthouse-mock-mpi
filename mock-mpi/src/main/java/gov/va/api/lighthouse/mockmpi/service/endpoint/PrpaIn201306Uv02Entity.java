@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.mockmpi;
+package gov.va.api.lighthouse.mockmpi.service.endpoint;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

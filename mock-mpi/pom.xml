@@ -15,13 +15,18 @@
     <docker.imageName>lighthouse-mock-mpi</docker.imageName>
     <apache.ws.security>1.6.19</apache.ws.security>
     <h2.version>1.4.199</h2.version>
-    <master-patient-index-model.version>1.0.3</master-patient-index-model.version>
+    <master-patient-index.version>1.0.4</master-patient-index.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>gov.va.api.lighthouse</groupId>
       <artifactId>master-patient-index-model</artifactId>
-      <version>${master-patient-index-model.version}</version>
+      <version>${master-patient-index.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>gov.va.api.lighthouse</groupId>
+      <artifactId>master-patient-index-client</artifactId>
+      <version>${master-patient-index.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ws.xmlschema</groupId>

@@ -4,4 +4,11 @@
     <Method name="persistResources"/>
     <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
   </Match>
+  <!-- To support local testing, we allow the patient.vista-site.details file to be overwritten by user input.
+       The value is loaded once on application start-up to build configurations and not used again.
+    -->
+  <Match>
+    <Class name="gov.va.api.lighthouse.mockmpi.service.config.VistaSiteConfig"/>
+    <Bug pattern="PATH_TRAVERSAL_IN"/>
+  </Match>
 </FindBugsFilter>

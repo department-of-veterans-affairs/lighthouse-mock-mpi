@@ -1,4 +1,4 @@
-package gov.va.api.lighthouse.mockmpi;
+package gov.va.api.lighthouse.mockmpi.service.config;
 
 import java.util.List;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
