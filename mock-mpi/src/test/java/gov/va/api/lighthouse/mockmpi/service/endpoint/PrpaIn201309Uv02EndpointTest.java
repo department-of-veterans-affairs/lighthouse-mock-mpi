@@ -29,16 +29,17 @@ class PrpaIn201309Uv02EndpointTest {
   static Stream<Arguments> prpain201309UV02Request() {
     return Stream.of(
         arguments(
-            "1010101010V666666",
+            "1010101010V666666^NI^200M^USVHA^A",
             new String[] {"1010101010V666666^NI^200M^USVHA^A", "00000^PI^123^USVHA^A"}),
         arguments(
-            "1111111111V111111",
+            "1111111111V111111^NI^200M^USVHA^A",
             new String[] {"1111111111V111111^NI^200M^USVHA^A", "00000^PI^456^USVHA^A"}),
         arguments(
-            "2222222222V222222",
+            "2222222222V222222^NI^200M^USVHA^A",
             new String[] {
               "2222222222V222222^NI^200M^USVHA^A", "00000^PI^456^USVHA^A", "00000^PI^789^USVHA^A"
-            }));
+            }),
+        arguments("12345^PI^200^USVHA^A", new String[] {}));
   }
 
   private PrpaIn201309Uv02Endpoint endpoint() {
@@ -58,7 +59,9 @@ class PrpaIn201309Uv02EndpointTest {
         .map(JAXBElement::getValue)
         .map(PRPAIN201310UV02MCCIMT000300UV01Message::getControlActProcess)
         .map(PRPAIN201310UV02MFMIMT700711UV01ControlActProcess::getSubject)
-        .map(o -> o.get(0))
+        .stream()
+        .flatMap(Collection::stream)
+        .findFirst()
         .map(PRPAIN201310UV02MFMIMT700711UV01Subject1::getRegistrationEvent)
         .map(PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent::getSubject1)
         .map(PRPAIN201310UV02MFMIMT700711UV01Subject2::getPatient)
@@ -71,12 +74,12 @@ class PrpaIn201309Uv02EndpointTest {
 
   @ParameterizedTest
   @MethodSource
-  void prpain201309UV02Request(String icn, String[] vistaSites) {
+  void prpain201309UV02Request(String icnSegment, String[] vistaSites) {
     var request =
         new JAXBElement<>(
             new QName("PRPA_IN201309UV02"),
             PRPAIN201309UV02.class,
-            PrpaIn201309Uv02Samples.createForIcn(icn).request());
+            PrpaIn201309Uv02Samples.createForIcnSegment(icnSegment).request());
     var actual = endpoint().prpain201309UV02Request(request);
     assertThat(extractIcnFrom1310Response(actual)).containsExactlyInAnyOrder(vistaSites);
   }

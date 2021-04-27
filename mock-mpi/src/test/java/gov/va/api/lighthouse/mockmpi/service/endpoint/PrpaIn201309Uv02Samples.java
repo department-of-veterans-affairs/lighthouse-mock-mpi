@@ -2,7 +2,6 @@ package gov.va.api.lighthouse.mockmpi.service.endpoint;
 
 import static gov.va.api.lighthouse.mockmpi.service.endpoint.Endpoints.csWithCode;
 
-import gov.va.api.lighthouse.mpi.PatientIdentifierSegment;
 import java.io.Serializable;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -32,9 +31,9 @@ import org.hl7.v3.ST;
 import org.hl7.v3.TS;
 import org.hl7.v3.XActMoodIntentEvent;
 
-@AllArgsConstructor(staticName = "createForIcn")
+@AllArgsConstructor(staticName = "createForIcnSegment")
 public class PrpaIn201309Uv02Samples {
-  private String icn;
+  private String icnSegment;
 
   private JAXBElement<MCCIMT000100UV01Agent> asAgent() {
     return new JAXBElement<>(
@@ -102,14 +101,6 @@ public class PrpaIn201309Uv02Samples {
   }
 
   private JAXBElement<PRPAMT201307UV02QueryByParameter> queryByParameter() {
-    String icnIdentifierSegment =
-        PatientIdentifierSegment.builder()
-            .identifier(icn)
-            .identifierType("NI")
-            .assigningLocation("200M")
-            .assigningAuthority("USVHA")
-            .build()
-            .toIdentifierString();
     ST semanticsText = ST.sTBuilder().build();
     semanticsText.getContent().add("Patient.Id");
     return new JAXBElement<>(
@@ -132,7 +123,7 @@ public class PrpaIn201309Uv02Samples {
                                     List.of(
                                         II.iIBuilder()
                                             .root("2.16.840.1.113883.4.349")
-                                            .extension(icnIdentifierSegment)
+                                            .extension(icnSegment)
                                             .build()))
                                 .semanticsText(semanticsText)
                                 .build()))

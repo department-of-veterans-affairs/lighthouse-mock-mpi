@@ -10,13 +10,17 @@ import java.util.UUID;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import lombok.AllArgsConstructor;
+import lombok.Value;
 import org.hl7.v3.ActClassControlAct;
 import org.hl7.v3.CD;
+import org.hl7.v3.CE;
 import org.hl7.v3.COCTMT090003UV01AssignedEntity;
 import org.hl7.v3.CommunicationFunctionType;
+import org.hl7.v3.ED;
 import org.hl7.v3.EntityClassDevice;
 import org.hl7.v3.II;
 import org.hl7.v3.MCCIMT000300UV01Acknowledgement;
+import org.hl7.v3.MCCIMT000300UV01AcknowledgementDetail;
 import org.hl7.v3.MCCIMT000300UV01Device;
 import org.hl7.v3.MCCIMT000300UV01Receiver;
 import org.hl7.v3.MCCIMT000300UV01Sender;
@@ -35,11 +39,34 @@ import org.hl7.v3.ParticipationTargetSubject;
 import org.hl7.v3.TS;
 import org.hl7.v3.XActMoodIntentEvent;
 
+@Value
 @AllArgsConstructor(staticName = "forIdentifiers")
 public class PrpaIn201309Uv02ResponseGenerator {
   private final List<PatientIdentifierSegment> patientIdentifierSegments;
 
-  private MCCIMT000300UV01Acknowledgement acknowledgement() {
+  private MCCIMT000300UV01Acknowledgement acknowledgementFailure() {
+    var code = CE.cEBuilder().build();
+    code.setCodeSystem("2.16.840.1.113883.5.1100");
+    code.setCode("INTERR");
+    code.setDisplayName("Internal System Error");
+    var text = ED.eDBuilder().build();
+    text.getContent().add("Could not extract ICN from parameters.");
+    return MCCIMT000300UV01Acknowledgement.builder()
+        .typeCode(csWithCode("AE"))
+        .targetMessage(
+            MCCIMT000300UV01TargetMessage.builder()
+                .id(
+                    II.iIBuilder()
+                        .extension("MCID-MMPI_" + UUID.randomUUID())
+                        .root("1.2.840.114350.1.13.0.1.7.1.1")
+                        .build())
+                .build())
+        .acknowledgementDetail(
+            List.of(MCCIMT000300UV01AcknowledgementDetail.builder().code(code).text(text).build()))
+        .build();
+  }
+
+  private MCCIMT000300UV01Acknowledgement acknowledgementSuccess() {
     return MCCIMT000300UV01Acknowledgement.builder()
         .typeCode(csWithCode("AA"))
         .targetMessage(
@@ -53,7 +80,24 @@ public class PrpaIn201309Uv02ResponseGenerator {
         .build();
   }
 
-  private PRPAIN201310UV02MFMIMT700711UV01ControlActProcess controlActProcess() {
+  private PRPAIN201310UV02MFMIMT700711UV01ControlActProcess controlActProcessFailure() {
+    return PRPAIN201310UV02MFMIMT700711UV01ControlActProcess.builder()
+        .classCode(ActClassControlAct.CACT)
+        .moodCode(XActMoodIntentEvent.EVN)
+        .code(CD.cDBuilder().code("PRPA_TE201310UV02").build())
+        .queryAck(
+            MFMIMT700711UV01QueryAck.builder()
+                .queryId(
+                    II.iIBuilder()
+                        .extension("MY_TST_9703")
+                        .root("1.2.840.114350.1.13.99999.4567.34")
+                        .build())
+                .queryResponseCode(csWithCode("AE"))
+                .build())
+        .build();
+  }
+
+  private PRPAIN201310UV02MFMIMT700711UV01ControlActProcess controlActProcessSuccess() {
     var nullFlavor = II.iIBuilder().build();
     nullFlavor.getNullFlavor().add("NA");
     return PRPAIN201310UV02MFMIMT700711UV01ControlActProcess.builder()
@@ -163,8 +207,15 @@ public class PrpaIn201309Uv02ResponseGenerator {
     response.setAcceptAckCode(csWithCode("NE"));
     response.getReceiver().add(receiver());
     response.setSender(sender());
-    response.getAcknowledgement().add(acknowledgement());
-    response.setControlActProcess(controlActProcess());
+    if (patientIdentifierSegments().isEmpty()) {
+      // Failure
+      response.getAcknowledgement().add(acknowledgementFailure());
+      response.setControlActProcess(controlActProcessFailure());
+    } else {
+      // Success
+      response.getAcknowledgement().add(acknowledgementSuccess());
+      response.setControlActProcess(controlActProcessSuccess());
+    }
     return response;
   }
 

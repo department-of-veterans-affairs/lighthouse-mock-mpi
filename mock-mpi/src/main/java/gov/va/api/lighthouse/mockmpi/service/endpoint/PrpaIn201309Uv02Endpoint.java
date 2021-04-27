@@ -1,5 +1,6 @@
 package gov.va.api.lighthouse.mockmpi.service.endpoint;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import gov.va.api.lighthouse.mockmpi.service.config.PatientVistaSiteDetails;
@@ -31,7 +32,7 @@ public class PrpaIn201309Uv02Endpoint {
 
   private final PatientVistaSiteDetails siteDetails;
 
-  private String extractIcnFrom1309Request(JAXBElement<PRPAIN201309UV02> requestBody) {
+  private Optional<String> extractIcnFrom1309Request(JAXBElement<PRPAIN201309UV02> requestBody) {
     // We only expect one icn at a time
     return Optional.ofNullable(requestBody)
         .map(JAXBElement::getValue)
@@ -49,15 +50,16 @@ public class PrpaIn201309Uv02Endpoint {
         .map(II::getExtension)
         .filter(Objects::nonNull)
         .map(PatientIdentifierSegment::parse)
+        .filter(pis -> "200M".equals(pis.assigningLocation()) && "NI".equals(pis.identifierType()))
         .map(PatientIdentifierSegment::identifier)
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Request did not contain an icn value."));
+        .findFirst();
   }
 
   private List<PatientIdentifierSegment> mapIcnToIdentifiers(String icn) {
     // <id extension="1011537977V693883^NI^200M^USVHA^P" root="2.16.840.1.113883.4.349"/>
     // <id extension="16264^PI^358^USVHA^A" root="2.16.840.1.113883.4.349"/>
-    // ToDo realistic identifier value?
+    // The identifier value here is set to `000000` because mock-mpi does not actually know a
+    // patient's DFN at a specific site. This value could be updated eventually if desired.
     var identifiers =
         siteDetails.getOrDefault(icn).sites().stream()
             .map(
@@ -87,9 +89,13 @@ public class PrpaIn201309Uv02Endpoint {
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "PRPA_IN201309UV02")
   public JAXBElement<PRPAIN201310UV02> prpain201309UV02Request(
       @RequestPayload JAXBElement<PRPAIN201309UV02> requestBody) {
-    String icn = extractIcnFrom1309Request(requestBody);
+    var maybeIcn = extractIcnFrom1309Request(requestBody);
     // Map sites to a PatientIdentifierSegment
-    List<PatientIdentifierSegment> identifiers = mapIcnToIdentifiers(icn);
+
+    List<PatientIdentifierSegment> identifiers = emptyList();
+    if (maybeIcn.isPresent()) {
+      identifiers = mapIcnToIdentifiers(maybeIcn.get());
+    }
     return new JAXBElement<>(
         new QName("PRPA_IN201310UV02"),
         PRPAIN201310UV02.class,
