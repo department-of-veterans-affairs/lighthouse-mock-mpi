@@ -44,23 +44,11 @@ trackStatus () {
 }
 
 # Make 1305 request.
-httpListenerTests () {
+thirteenOhFive() {
+  local otzf=$(mktemp)
 
-  if [[ ! "$ENDPOINT_DOMAIN_NAME" == http* ]]; then
-      ENDPOINT_DOMAIN_NAME="https://$ENDPOINT_DOMAIN_NAME"
-  fi
-
-  for path in "${PATHS[@]}"
-    do
-      request_url="$ENDPOINT_DOMAIN_NAME$BASE_PATH$path"
-      status_code=$(curl -k --write-out %{http_code} --silent --output /dev/null "$request_url")
-      trackStatus
-    done
-
-  path="/psim_webservice/IdMWebService/"
-  request_url="$ENDPOINT_DOMAIN_NAME$BASE_PATH$path"
-  status_code=$(curl -X POST -k --write-out %{http_code} --silent --output /dev/null "$request_url" -H 'Content-Type: text/xml' -d '
-  <env:Envelope xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  cat > ${otzf} <<EOF
+<env:Envelope xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <env:Header/>
     <env:Body>
       <idm:PRPA_IN201305UV02 xmlns:idm="http://vaww.oed.oit.va.gov" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3" xsi:schemaLocation="urn:hl7-org:v3 ../../schema/HL7V3/NE2008/multicacheschemas/PRPA_IN201305UV02.xsd" ITSVersion="XML_1.0">
@@ -126,8 +114,94 @@ httpListenerTests () {
         </controlActProcess>
       </idm:PRPA_IN201305UV02>
     </env:Body>
-  </env:Envelope>')
-  trackStatus
+  </env:Envelope>
+EOF
+
+  echo ${otzf}
+}
+
+thirteenOhNine() {
+  local otzn=$(mktemp)
+
+  cat > ${otzn} <<EOF
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Body>
+        <ns2:PRPA_IN201309UV02 xmlns="urn:hl7-org:v3" xmlns:ns2="http://vaww.oed.oit.va.gov" ITSVersion="XML_1.0">
+            <id root="1.2.840.114350.1.13.0.1.7.1.1" extension="MCID-MMPI_2a01c192-ee19-4cfe-89f2-63ecab8bc558"/>
+            <creationTime value="20201209200627546"/>
+            <versionCode code="3.5"/>
+            <interactionId root="2.16.840.1.113883.1.6"/>
+            <processingCode code="T"/>
+            <processingModeCode code="T"/>
+            <acceptAckCode code="AL"/>
+            <receiver typeCode="RCV">
+                <device classCode="DEV" determinerCode="INSTANCE">
+                    <id root="2.16.840.1.113883.4.349"/>
+                </device>
+            </receiver>
+            <sender typeCode="SND">
+                <device classCode="DEV" determinerCode="INSTANCE">
+                    <id root="2.16.840.1.113883.3.42.10001.100001.12" extension="200MMPIE"/>
+                    <asAgent xmlns:ns3="urn:hl7-org:v3" classCode="AGNT">
+                        <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                            <ns3:id root="2.16.840.1.113883.4.349" extension="200MMPIG"/>
+                        </representedOrganization>
+                    </asAgent>
+                </device>
+            </sender>
+            <controlActProcess classCode="CACT" moodCode="EVN">
+                <code code="PRPA_TE201309UV02" codeSystem="2.16.840.1.113883.1.6"/>
+                <dataEnterer typeCode="ENT" contextControlCode="AP">
+                    <assignedPerson classCode="ASSIGNED">
+                        <id root="2.16.840.1.113883.4.349" extension="200MMPIG"/>
+                        <assignedPerson xmlns:ns3="urn:hl7-org:v3" xmlns="" classCode="PSN" determinerCode="INSTANCE">
+                            <ns3:name>
+                                <given>MMPI</given>
+                                <family>LIGHTHOUSE</family>
+                            </ns3:name>
+                        </assignedPerson>
+                    </assignedPerson>
+                </dataEnterer>
+                <queryByParameter xmlns:ns3="urn:hl7-org:v3">
+                    <ns3:queryId root="1.2.840.114350.1.13.99999.4567.34" extension="MY_TST_9703"/>
+                    <ns3:statusCode code="new"/>
+                    <ns3:responsePriorityCode code="I"/>
+                    <ns3:parameterList>
+                        <ns3:patientIdentifier>
+                            <ns3:value root="2.16.840.1.113883.4.349" extension="1011537977V693883^NI^200M^USVHA"/>
+                            <ns3:semanticsText>Patient.Id</ns3:semanticsText>
+                        </ns3:patientIdentifier>
+                    </ns3:parameterList>
+                </queryByParameter>
+            </controlActProcess>
+        </ns2:PRPA_IN201309UV02>
+    </S:Body>
+</S:Envelope>
+EOF
+
+  echo ${otzn}
+}
+
+httpListenerTests () {
+
+  if [[ ! "$ENDPOINT_DOMAIN_NAME" == http* ]]; then
+      ENDPOINT_DOMAIN_NAME="https://$ENDPOINT_DOMAIN_NAME"
+  fi
+
+  for path in "${PATHS[@]}"
+    do
+      request_url="$ENDPOINT_DOMAIN_NAME$BASE_PATH$path"
+      status_code=$(curl -k --write-out %{http_code} --silent --output /dev/null "$request_url")
+      trackStatus
+    done
+
+  request_url="${ENDPOINT_DOMAIN_NAME}${BASE_PATH}/psim_webservice/IdMWebService/"
+  for body in "$(thirteenOhFive) $(thirteenOhNine)"
+  do
+    status_code=$(curl -X POST -k --write-out %{http_code} --silent --output /dev/null "$request_url" -H 'Content-Type: text/xml' -d@${body})
+    trackStatus
+  done
 }
 
 printResults () {
