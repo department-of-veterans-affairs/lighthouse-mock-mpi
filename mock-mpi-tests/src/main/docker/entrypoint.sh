@@ -197,7 +197,7 @@ httpListenerTests () {
     done
 
   request_url="${ENDPOINT_DOMAIN_NAME}${BASE_PATH}/psim_webservice/IdMWebService/"
-  for body in "$(thirteenOhFive) $(thirteenOhNine)"
+  for body in "$(thirteenOhFive)" "$(thirteenOhNine)"
   do
     status_code=$(curl -X POST -k --write-out %{http_code} --silent --output /dev/null "$request_url" -H 'Content-Type: text/xml' -d@${body})
     trackStatus
