@@ -45,7 +45,7 @@
       <initialQuantity value="1"/>
       <parameterList>
         <livingSubjectAdministrativeGender>
-          <value code="M"/>
+          <value code="X"/>
           <semanticsText>Gender</semanticsText>
         </livingSubjectAdministrativeGender>
         <livingSubjectBirthTime>
