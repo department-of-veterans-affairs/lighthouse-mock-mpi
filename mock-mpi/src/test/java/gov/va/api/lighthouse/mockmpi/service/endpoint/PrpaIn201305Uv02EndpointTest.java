@@ -71,43 +71,6 @@ public class PrpaIn201305Uv02EndpointTest {
     return responseCode;
   }
 
-  JAXBElement<PRPAIN201305UV02> validEdipiRequest(String edipi) {
-    PRPAIN201305UV02 prpain201305UV02 = new PRPAIN201305UV02();
-    prpain201305UV02.setControlActProcess(
-        PRPAIN201305UV02QUQIMT021001UV01ControlActProcess.builder()
-            .queryByParameter(
-                new org.hl7.v3.ObjectFactory()
-                    .createPRPAIN201305UV02QUQIMT021001UV01ControlActProcessQueryByParameter(
-                        PRPAMT201306UV02QueryByParameter.builder()
-                            .parameterList(
-                                PRPAMT201306UV02ParameterList.builder()
-                                    .id(
-                                        II.iIBuilder()
-                                            .root("2.16.840.1.113883.3.42.10001.100001.12")
-                                            .extension(edipi)
-                                            .build())
-                                    .build())
-                            .build()))
-            .build());
-    return new ObjectFactory().createPRPAIN201305UV02(prpain201305UV02);
-  }
-
-  @Test
-  public void validEdipiTest() {
-    assertThat(
-            getResponse(validEdipiRequest("1025579697"))
-                .getControlActProcess()
-                .getSubject()
-                .get(0)
-                .getRegistrationEvent()
-                .getSubject1()
-                .getPatient()
-                .getId()
-                .get(13)
-                .getExtension())
-        .contains("1025579697");
-  }
-
   JAXBElement<PRPAIN201305UV02> validIcnRequest(String icn) {
     PRPAIN201305UV02 prpain201305UV02 = new PRPAIN201305UV02();
     prpain201305UV02.setControlActProcess(

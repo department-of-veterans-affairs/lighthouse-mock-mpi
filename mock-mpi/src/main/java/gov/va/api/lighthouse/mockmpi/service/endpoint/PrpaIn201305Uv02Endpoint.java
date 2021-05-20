@@ -33,31 +33,10 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class PrpaIn201305Uv02Endpoint {
   private static final String NAMESPACE_URI = "http://vaww.oed.oit.va.gov";
 
-  private static final String EDIPI_ROOT = "2.16.840.1.113883.3.42.10001.100001.12";
-
-  private static final String ICN_ROOT = "2.16.840.1.113883.4.349";
-
   @PersistenceContext private EntityManager entityManager;
 
-  /** Return the identifier present (ssn, edipi, or icn) in the request. */
-  private String getIdentifier(JAXBElement<PRPAIN201305UV02> request) {
-    String ssn = getSsn(request);
-    if (ssn != null && !ssn.isBlank()) {
-      return ssn;
-    }
-    String icn = getRequestId(request, ICN_ROOT);
-    if (icn != null && !icn.isBlank()) {
-      return icn;
-    }
-    String edipi = getRequestId(request, EDIPI_ROOT);
-    if (edipi != null && !edipi.isBlank()) {
-      return edipi;
-    }
-    return null;
-  }
-
-  /** Return ID present in request that matches the passed in root value. */
-  private String getRequestId(JAXBElement<PRPAIN201305UV02> request, String rootValue) {
+  /** Return icn if present in request. */
+  private String getIcn(JAXBElement<PRPAIN201305UV02> request) {
     String root =
         Optional.ofNullable(request)
             .map(req -> req.getValue())
@@ -68,7 +47,7 @@ public class PrpaIn201305Uv02Endpoint {
             .map(parameterList -> parameterList.getId())
             .map(id -> id.getRoot())
             .orElse(null);
-    if (root != null && root.equals(rootValue)) {
+    if (root != null && root.equals("2.16.840.1.113883.4.349")) {
       return Optional.ofNullable(request)
           .map(req -> req.getValue())
           .map(value -> value.getControlActProcess())
@@ -82,6 +61,20 @@ public class PrpaIn201305Uv02Endpoint {
     return null;
   }
 
+  /** Return the identifier present (ssn or icn) in the request. */
+  private String getIdentifier(JAXBElement<PRPAIN201305UV02> request) {
+    String ssn = getSsn(request);
+    if (ssn != null && !ssn.isBlank()) {
+      return ssn;
+    }
+    String icn = getIcn(request);
+    if (icn != null && !icn.isBlank()) {
+      return icn;
+    }
+    return null;
+  }
+
+  /** Find response entity corresponding to identifier, unmarshal and return as 1306 response. */
   @SneakyThrows
   private JAXBElement<PRPAIN201306UV02> getResponse(String identifier) {
     PrpaIn201306Uv02Entity responseEntity =
@@ -95,6 +88,7 @@ public class PrpaIn201305Uv02Endpoint {
             new StreamSource(new StringReader(responseEntity.profile())), PRPAIN201306UV02.class);
   }
 
+  /** Return ssn if present in the request. */
   private String getSsn(JAXBElement<PRPAIN201305UV02> request) {
     String ssn =
         Optional.ofNullable(request)
@@ -119,7 +113,6 @@ public class PrpaIn201305Uv02Endpoint {
   @EventListener(ApplicationStartedEvent.class)
   public void initData() {
     persistResources("classpath*:data/PRPA_IN201306UV02/profile/*.xml");
-    persistResources("classpath*:data/PRPA_IN201306UV02/profile_edipi/*.xml");
     persistResources("classpath*:data/PRPA_IN201306UV02/profile_icn/*.xml");
   }
 
@@ -150,9 +143,9 @@ public class PrpaIn201305Uv02Endpoint {
       return getResponse("invalid_request");
     }
     JAXBElement<PRPAIN201306UV02> response = getResponse(identifier);
-    if (response != null) {
-      return response;
+    if (response == null) {
+      return getResponse("not_found");
     }
-    return getResponse("not_found");
+    return response;
   }
 }
