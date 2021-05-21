@@ -33,6 +33,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class PrpaIn201305Uv02Endpoint {
   private static final String NAMESPACE_URI = "http://vaww.oed.oit.va.gov";
 
+  private static final String ICN_ROOT = "2.16.840.1.113883.4.349";
+
   @PersistenceContext private EntityManager entityManager;
 
   /** Return icn if present in request. */
@@ -47,7 +49,7 @@ public class PrpaIn201305Uv02Endpoint {
             .map(parameterList -> parameterList.getId())
             .map(id -> id.getRoot())
             .orElse(null);
-    if (root != null && root.equals("2.16.840.1.113883.4.349")) {
+    if (root != null && root.equals(ICN_ROOT)) {
       return Optional.ofNullable(request)
           .map(req -> req.getValue())
           .map(value -> value.getControlActProcess())
@@ -61,7 +63,7 @@ public class PrpaIn201305Uv02Endpoint {
     return null;
   }
 
-  /** Return the identifier present (ssn or icn) in the request. */
+  /** Return the identifier present (ssn or icn) in the request, null if neither are present. */
   private String getIdentifier(JAXBElement<PRPAIN201305UV02> request) {
     String ssn = getSsn(request);
     if (ssn != null && !ssn.isBlank()) {
