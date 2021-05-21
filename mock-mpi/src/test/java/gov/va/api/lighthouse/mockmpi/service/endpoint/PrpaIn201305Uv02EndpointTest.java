@@ -27,26 +27,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class PrpaIn201305Uv02EndpointTest {
   @Autowired PrpaIn201305Uv02Endpoint prpaIn201305Uv02Endpoint;
 
-  @Test
-  public void correctSsnTest() {
-    assertThat(
-            getResponse(validRequest("796130115"))
-                .getControlActProcess()
-                .getSubject()
-                .get(0)
-                .getRegistrationEvent()
-                .getSubject1()
-                .getPatient()
-                .getPatientPerson()
-                .getValue()
-                .getAsOtherIDs()
-                .get(0)
-                .getId()
-                .get(0)
-                .getExtension())
-        .isEqualTo("796130115");
-  }
-
   private PRPAIN201306UV02 getResponse(JAXBElement<PRPAIN201305UV02> request) {
     return prpaIn201305Uv02Endpoint.prpa_In201305Uv02Response(request).getValue();
   }
@@ -78,7 +58,7 @@ public class PrpaIn201305Uv02EndpointTest {
   @Test
   public void notFoundTest() {
     assertThat(
-            getResponse(validRequest("123456789"))
+            getResponse(validSsnRequest("123456789"))
                 .getControlActProcess()
                 .getQueryAck()
                 .getQueryResponseCode())
@@ -91,7 +71,44 @@ public class PrpaIn201305Uv02EndpointTest {
     return responseCode;
   }
 
-  JAXBElement<PRPAIN201305UV02> validRequest(String ssn) {
+  JAXBElement<PRPAIN201305UV02> validIcnRequest(String icn) {
+    PRPAIN201305UV02 prpain201305UV02 = new PRPAIN201305UV02();
+    prpain201305UV02.setControlActProcess(
+        PRPAIN201305UV02QUQIMT021001UV01ControlActProcess.builder()
+            .queryByParameter(
+                new org.hl7.v3.ObjectFactory()
+                    .createPRPAIN201305UV02QUQIMT021001UV01ControlActProcessQueryByParameter(
+                        PRPAMT201306UV02QueryByParameter.builder()
+                            .parameterList(
+                                PRPAMT201306UV02ParameterList.builder()
+                                    .id(
+                                        II.iIBuilder()
+                                            .root("2.16.840.1.113883.4.349")
+                                            .extension(icn)
+                                            .build())
+                                    .build())
+                            .build()))
+            .build());
+    return new ObjectFactory().createPRPAIN201305UV02(prpain201305UV02);
+  }
+
+  @Test
+  public void validIcnTest() {
+    assertThat(
+            getResponse(validIcnRequest("1008691040V020761"))
+                .getControlActProcess()
+                .getSubject()
+                .get(0)
+                .getRegistrationEvent()
+                .getSubject1()
+                .getPatient()
+                .getId()
+                .get(0)
+                .getExtension())
+        .contains("1008691040V020761");
+  }
+
+  JAXBElement<PRPAIN201305UV02> validSsnRequest(String ssn) {
     PRPAIN201305UV02 prpain201305UV02 = new PRPAIN201305UV02();
     prpain201305UV02.setControlActProcess(
         PRPAIN201305UV02QUQIMT021001UV01ControlActProcess.builder()
@@ -112,5 +129,25 @@ public class PrpaIn201305Uv02EndpointTest {
                             .build()))
             .build());
     return new ObjectFactory().createPRPAIN201305UV02(prpain201305UV02);
+  }
+
+  @Test
+  public void validSsnTest() {
+    assertThat(
+            getResponse(validSsnRequest("796130115"))
+                .getControlActProcess()
+                .getSubject()
+                .get(0)
+                .getRegistrationEvent()
+                .getSubject1()
+                .getPatient()
+                .getPatientPerson()
+                .getValue()
+                .getAsOtherIDs()
+                .get(0)
+                .getId()
+                .get(0)
+                .getExtension())
+        .isEqualTo("796130115");
   }
 }

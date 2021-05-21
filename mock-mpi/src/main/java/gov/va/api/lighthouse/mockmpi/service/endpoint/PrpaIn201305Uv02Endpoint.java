@@ -33,7 +33,82 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class PrpaIn201305Uv02Endpoint {
   private static final String NAMESPACE_URI = "http://vaww.oed.oit.va.gov";
 
+  private static final String ICN_ROOT = "2.16.840.1.113883.4.349";
+
   @PersistenceContext private EntityManager entityManager;
+
+  /** Return icn if present in request. */
+  private String getIcn(JAXBElement<PRPAIN201305UV02> request) {
+    String root =
+        Optional.ofNullable(request)
+            .map(req -> req.getValue())
+            .map(value -> value.getControlActProcess())
+            .map(controlActProcess -> controlActProcess.getQueryByParameter())
+            .map(queryByParameter -> queryByParameter.getValue())
+            .map(value -> value.getParameterList())
+            .map(parameterList -> parameterList.getId())
+            .map(id -> id.getRoot())
+            .orElse(null);
+    if (root != null && root.equals(ICN_ROOT)) {
+      return Optional.ofNullable(request)
+          .map(req -> req.getValue())
+          .map(value -> value.getControlActProcess())
+          .map(controlActProcess -> controlActProcess.getQueryByParameter())
+          .map(queryByParameter -> queryByParameter.getValue())
+          .map(value -> value.getParameterList())
+          .map(parameterList -> parameterList.getId())
+          .map(id -> id.getExtension())
+          .orElse(null);
+    }
+    return null;
+  }
+
+  /** Return the identifier present (ssn or icn) in the request, null if neither are present. */
+  private String getIdentifier(JAXBElement<PRPAIN201305UV02> request) {
+    String ssn = getSsn(request);
+    if (ssn != null && !ssn.isBlank()) {
+      return ssn;
+    }
+    String icn = getIcn(request);
+    if (icn != null && !icn.isBlank()) {
+      return icn;
+    }
+    return null;
+  }
+
+  /** Find response entity corresponding to identifier, unmarshal and return as 1306 response. */
+  @SneakyThrows
+  private JAXBElement<PRPAIN201306UV02> getResponse(String identifier) {
+    PrpaIn201306Uv02Entity responseEntity =
+        entityManager.find(PrpaIn201306Uv02Entity.class, identifier);
+    if (responseEntity == null) {
+      return null;
+    }
+    return JAXBContext.newInstance(PRPAIN201306UV02.class)
+        .createUnmarshaller()
+        .unmarshal(
+            new StreamSource(new StringReader(responseEntity.profile())), PRPAIN201306UV02.class);
+  }
+
+  /** Return ssn if present in the request. */
+  private String getSsn(JAXBElement<PRPAIN201305UV02> request) {
+    String ssn =
+        Optional.ofNullable(request)
+            .map(req -> req.getValue())
+            .map(value -> value.getControlActProcess())
+            .map(controlActProcess -> controlActProcess.getQueryByParameter())
+            .map(queryByParameter -> queryByParameter.getValue())
+            .map(value -> value.getParameterList())
+            .map(parameterList -> parameterList.getLivingSubjectId())
+            .filter(livingSubjectIdList -> !livingSubjectIdList.isEmpty())
+            .map(livingSubjectIdList -> livingSubjectIdList.get(0))
+            .map(livingSubjectId -> livingSubjectId.getValue())
+            .filter(valueList -> !valueList.isEmpty())
+            .map(valueList -> valueList.get(0))
+            .map(ii -> ii.getExtension())
+            .orElse(null);
+    return ssn;
+  }
 
   /** Persist PRPAIN201306UV02 for each data file. */
   @Transactional
@@ -63,48 +138,16 @@ public class PrpaIn201305Uv02Endpoint {
   /** Get MPI PRPAIN201306UV02 Response. */
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "PRPA_IN201305UV02")
   @ResponsePayload
-  @SneakyThrows
   public JAXBElement<PRPAIN201306UV02> prpa_In201305Uv02Response(
       @RequestPayload JAXBElement<PRPAIN201305UV02> request) {
-    String ssn =
-        Optional.ofNullable(request)
-            .map(req -> req.getValue())
-            .map(value -> value.getControlActProcess())
-            .map(controlActProcess -> controlActProcess.getQueryByParameter())
-            .map(queryByParameter -> queryByParameter.getValue())
-            .map(value -> value.getParameterList())
-            .map(parameterList -> parameterList.getLivingSubjectId())
-            .filter(livingSubjectIdList -> !livingSubjectIdList.isEmpty())
-            .map(livingSubjectIdList -> livingSubjectIdList.get(0))
-            .map(livingSubjectId -> livingSubjectId.getValue())
-            .filter(valueList -> !valueList.isEmpty())
-            .map(valueList -> valueList.get(0))
-            .map(ii -> ii.getExtension())
-            .orElse(null);
-    if (ssn == null) {
-      return JAXBContext.newInstance(PRPAIN201306UV02.class)
-          .createUnmarshaller()
-          .unmarshal(
-              new StreamSource(
-                  new StringReader(
-                      entityManager
-                          .find(PrpaIn201306Uv02Entity.class, "invalid_request")
-                          .profile())),
-              PRPAIN201306UV02.class);
+    String identifier = getIdentifier(request);
+    if (identifier == null) {
+      return getResponse("invalid_request");
     }
-    PrpaIn201306Uv02Entity responseEntity = entityManager.find(PrpaIn201306Uv02Entity.class, ssn);
-    if (responseEntity == null) {
-      return JAXBContext.newInstance(PRPAIN201306UV02.class)
-          .createUnmarshaller()
-          .unmarshal(
-              new StreamSource(
-                  new StringReader(
-                      entityManager.find(PrpaIn201306Uv02Entity.class, "not_found").profile())),
-              PRPAIN201306UV02.class);
+    JAXBElement<PRPAIN201306UV02> response = getResponse(identifier);
+    if (response == null) {
+      return getResponse("not_found");
     }
-    String profile = responseEntity.profile();
-    return JAXBContext.newInstance(PRPAIN201306UV02.class)
-        .createUnmarshaller()
-        .unmarshal(new StreamSource(new StringReader(profile)), PRPAIN201306UV02.class);
+    return response;
   }
 }
