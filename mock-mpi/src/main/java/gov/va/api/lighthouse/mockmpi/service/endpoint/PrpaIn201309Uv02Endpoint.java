@@ -25,6 +25,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+/** 1309 request mock endpoint. */
 @Endpoint
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class PrpaIn201309Uv02Endpoint {
@@ -87,7 +88,7 @@ public class PrpaIn201309Uv02Endpoint {
   /** Entrypoint to MockMPI 1309 request. */
   @ResponsePayload
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "PRPA_IN201309UV02")
-  public JAXBElement<PRPAIN201310UV02> prpain201309UV02Request(
+  public JAXBElement<PRPAIN201310UV02> prpain201309Uv02Request(
       @RequestPayload JAXBElement<PRPAIN201309UV02> requestBody) {
     var maybeIcn = extractIcnFrom1309Request(requestBody);
     // Map sites to a PatientIdentifierSegment

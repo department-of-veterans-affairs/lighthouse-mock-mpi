@@ -2,6 +2,7 @@ package gov.va.api.lighthouse.mockmpi.service.endpoint;
 
 import org.hl7.v3.CS;
 
+/** Utility methods for multiple uses. */
 public class Endpoints {
 
   /** Build an HL7 CS object with only a code. */

@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+/** 1306 response data entity. */
 @Data
 @Entity
 @Builder

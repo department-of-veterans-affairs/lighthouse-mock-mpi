@@ -39,6 +39,7 @@ import org.hl7.v3.ParticipationTargetSubject;
 import org.hl7.v3.TS;
 import org.hl7.v3.XActMoodIntentEvent;
 
+/** 1309 response generator. */
 @Value
 @AllArgsConstructor(staticName = "forIdentifiers")
 public class PrpaIn201309Uv02ResponseGenerator {

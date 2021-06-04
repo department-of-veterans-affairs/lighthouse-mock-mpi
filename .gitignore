@@ -29,3 +29,4 @@ target/
 /build/
 
 secrets.conf
+application-*.properties
