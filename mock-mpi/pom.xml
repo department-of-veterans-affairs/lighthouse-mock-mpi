@@ -69,12 +69,6 @@
       <artifactId>error_prone_annotations</artifactId>
       <version>${error-prone.version}</version>
     </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <distributionManagement>
     <repository>
