@@ -80,7 +80,7 @@ class PrpaIn201309Uv02EndpointTest {
             new QName("PRPA_IN201309UV02"),
             PRPAIN201309UV02.class,
             PrpaIn201309Uv02Samples.createForIcnSegment(icnSegment).request());
-    var actual = endpoint().prpain201309UV02Request(request);
+    var actual = endpoint().prpain201309Uv02Request(request);
     assertThat(extractIcnFrom1310Response(actual)).containsExactlyInAnyOrder(vistaSites);
   }
 }

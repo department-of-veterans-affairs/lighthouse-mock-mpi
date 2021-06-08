@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 
+/** Patient Vista Site Details. */
 @Data
 @AllArgsConstructor(staticName = "of")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,6 +20,7 @@ public class PatientVistaSiteDetails {
     return vistaSiteDetails().getOrDefault(icn, vistaSiteDetails().get("default"));
   }
 
+  /** Site details constructor. */
   @Data
   @Builder
   @AllArgsConstructor(staticName = "of")

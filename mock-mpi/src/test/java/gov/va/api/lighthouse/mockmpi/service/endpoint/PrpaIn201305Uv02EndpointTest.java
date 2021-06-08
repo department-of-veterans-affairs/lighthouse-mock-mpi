@@ -14,13 +14,13 @@ import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.PRPAMT201306UV02LivingSubjectId;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
     classes = {Application.class},
     properties = {"patient.vista-site.details=src/test/resources/vista-sites.json"})
