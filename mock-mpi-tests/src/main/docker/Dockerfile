@@ -1,4 +1,4 @@
-FROM vasdvp/health-apis-dev-tools:mvn-3.6-jdk-14
+FROM vasdvp/health-apis-dev-tools:mvn-3.8-jdk-16
 
 COPY entrypoint.sh /
 RUN chmod 755 /entrypoint.sh
